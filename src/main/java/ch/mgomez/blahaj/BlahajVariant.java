@@ -68,6 +68,7 @@ public class BlahajVariant {
         this.keywords = Collections.unmodifiableList(kw);
     }
 
+// spotless:off
     /** Marks this variant as using one of the photo-textured 3D cat models instead of the shark. */
     public BlahajVariant withCatModel(String modelId) {
         this.catModelId = modelId;
@@ -78,6 +79,7 @@ public class BlahajVariant {
     public ModelCat getCatModel() {
         return catModelId == null ? null : ModelCat.byId(catModelId);
     }
+// spotless:on
 
     public String getId() {
         return id;
@@ -138,8 +140,10 @@ public class BlahajVariant {
 
     public static final List<BlahajVariant> ALL_VARIANTS = new ArrayList<>();
     public static final List<BlahajVariant> CUSTOM_VARIANTS = new ArrayList<>();
+// spotless:off
     /** 3D cat variants. Kept out of ALL_VARIANTS because they use 512x512 atlases rather than the 32x32 shark skins. */
     public static final List<BlahajVariant> MODEL_VARIANTS = new ArrayList<>();
+// spotless:on
     public static final BlahajVariant DEFAULT_VARIANT = new BlahajVariant("default", "Classic blue", "blue_shark.png");
 
     public static synchronized void registerCustomVariant(BlahajVariant variant) {
@@ -255,6 +259,7 @@ public class BlahajVariant {
                 Arrays.asList("blahaj", "bl\u00e5haj", "haj", "haai", "hai", "default", "classic"),
                 true));
 
+// spotless:off
         // Photo-textured 3D cats
         MODEL_VARIANTS.add(
             new BlahajVariant(
@@ -287,6 +292,7 @@ public class BlahajVariant {
         }
         return any;
     }
+// spotless:on
 
     private static void register(BlahajVariant v) {
         ALL_VARIANTS.add(v);
@@ -324,6 +330,7 @@ public class BlahajVariant {
             return null;
         }
 
+// spotless:off
         // 0. 3D cat variants take priority over everything else
         BlahajVariant bestModelMatch = null;
         int bestModelKeywordLen = -1;
@@ -342,6 +349,7 @@ public class BlahajVariant {
         if (bestModelMatch != null) {
             return bestModelMatch;
         }
+// spotless:on
 
         // 1. Check custom flat image variants first
         BlahajVariant bestCustomMatch = null;

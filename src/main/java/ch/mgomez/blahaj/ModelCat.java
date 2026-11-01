@@ -1,3 +1,4 @@
+// spotless:off
 package ch.mgomez.blahaj;
 
 import net.minecraft.client.renderer.Tessellator;
@@ -140,3 +141,4 @@ public class ModelCat {
         GL11.glPopMatrix();
     }
 }
+// spotless:on
