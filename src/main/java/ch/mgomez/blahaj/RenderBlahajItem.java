@@ -197,7 +197,12 @@ public class RenderBlahajItem implements IItemRenderer {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        ModelBlahaj.instance.render(1.0F);
+        ModelCat catModel = variant.getCatModel();
+        if (catModel != null) {
+            catModel.render(1.0F);
+        } else {
+            ModelBlahaj.instance.render(1.0F);
+        }
 
         GL11.glDisable(GL11.GL_BLEND);
         if (type == ItemRenderType.INVENTORY) {

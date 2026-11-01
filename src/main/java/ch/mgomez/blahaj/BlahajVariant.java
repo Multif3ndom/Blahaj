@@ -22,6 +22,7 @@ public class BlahajVariant {
     private final int imageWidth;
     private final int imageHeight;
     private ResourceLocation cachedTexture;
+    private String catModelId;
 
     public BlahajVariant(String id, String displayName, String textureFile, List<String> alternatives, boolean lesser) {
         this.id = id;
@@ -65,6 +66,17 @@ public class BlahajVariant {
             kw.addAll(alternatives);
         }
         this.keywords = Collections.unmodifiableList(kw);
+    }
+
+    /** Marks this variant as using one of the photo-textured 3D cat models instead of the shark. */
+    public BlahajVariant withCatModel(String modelId) {
+        this.catModelId = modelId;
+        return this;
+    }
+
+    /** The 3D cat model for this variant, or null if it should be drawn with the normal shark model. */
+    public ModelCat getCatModel() {
+        return catModelId == null ? null : ModelCat.byId(catModelId);
     }
 
     public String getId() {
@@ -126,6 +138,8 @@ public class BlahajVariant {
 
     public static final List<BlahajVariant> ALL_VARIANTS = new ArrayList<>();
     public static final List<BlahajVariant> CUSTOM_VARIANTS = new ArrayList<>();
+    /** 3D cat variants. Kept out of ALL_VARIANTS because they use 512x512 atlases rather than the 32x32 shark skins. */
+    public static final List<BlahajVariant> MODEL_VARIANTS = new ArrayList<>();
     public static final BlahajVariant DEFAULT_VARIANT = new BlahajVariant("default", "Classic blue", "blue_shark.png");
 
     public static synchronized void registerCustomVariant(BlahajVariant variant) {
@@ -240,6 +254,38 @@ public class BlahajVariant {
                 "blue_shark.png",
                 Arrays.asList("blahaj", "bl\u00e5haj", "haj", "haai", "hai", "default", "classic"),
                 true));
+
+        // Photo-textured 3D cats
+        MODEL_VARIANTS.add(
+            new BlahajVariant(
+                "orangecat",
+                "Orange cat",
+                "cat_orange.png",
+                Arrays.asList("orange cat", "ginger cat", "ginger", "tabby", "orange tabby")).withCatModel("cat_orange"));
+        MODEL_VARIANTS.add(
+            new BlahajVariant(
+                "fluffycat",
+                "Fluffy cat",
+                "cat_fluffy.png",
+                Arrays.asList("fluffy cat", "fluffy", "tortie", "tortoiseshell", "persian")).withCatModel("cat_fluffy"));
+    }
+
+    private static boolean keywordMatches(String kwLower, Set<String> tokenSet, String lower, String lowerNorm) {
+        boolean any = false;
+        for (String kt : kwLower.split("[ \\-_]+")) {
+            String trimmed = kt.trim();
+            if (trimmed.isEmpty()) continue;
+            any = true;
+            String ktNorm = trimmed.replace('\u00e5', 'a')
+                .replace('\u00e4', 'a')
+                .replace('\u00f6', 'o');
+            boolean tokenMatch = tokenSet.contains(trimmed) || tokenSet.contains(ktNorm);
+            boolean subMatch = lower.contains(trimmed) || lowerNorm.contains(ktNorm);
+            if (!tokenMatch && (trimmed.length() < 3 || !subMatch)) {
+                return false;
+            }
+        }
+        return any;
     }
 
     private static void register(BlahajVariant v) {
@@ -276,6 +322,25 @@ public class BlahajVariant {
 
         if (tokenSet.isEmpty()) {
             return null;
+        }
+
+        // 0. 3D cat variants take priority over everything else
+        BlahajVariant bestModelMatch = null;
+        int bestModelKeywordLen = -1;
+        for (BlahajVariant v : MODEL_VARIANTS) {
+            for (String kw : v.getKeywords()) {
+                if (kw == null) continue;
+                String kwLower = kw.toLowerCase(Locale.ROOT)
+                    .trim();
+                if (kwLower.isEmpty()) continue;
+                if (keywordMatches(kwLower, tokenSet, lower, lowerNorm) && kw.length() > bestModelKeywordLen) {
+                    bestModelMatch = v;
+                    bestModelKeywordLen = kw.length();
+                }
+            }
+        }
+        if (bestModelMatch != null) {
+            return bestModelMatch;
         }
 
         // 1. Check custom flat image variants first
