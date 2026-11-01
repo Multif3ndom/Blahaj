@@ -68,7 +68,7 @@ public class BlahajVariant {
         this.keywords = Collections.unmodifiableList(kw);
     }
 
-// spotless:off
+    // spotless:off
     /** Marks this variant as using one of the photo-textured 3D cat models instead of the shark. */
     public BlahajVariant withCatModel(String modelId) {
         this.catModelId = modelId;
@@ -140,7 +140,7 @@ public class BlahajVariant {
 
     public static final List<BlahajVariant> ALL_VARIANTS = new ArrayList<>();
     public static final List<BlahajVariant> CUSTOM_VARIANTS = new ArrayList<>();
-// spotless:off
+    // spotless:off
     /** 3D cat variants. Kept out of ALL_VARIANTS because they use 512x512 atlases rather than the 32x32 shark skins. */
     public static final List<BlahajVariant> MODEL_VARIANTS = new ArrayList<>();
 // spotless:on
@@ -259,7 +259,7 @@ public class BlahajVariant {
                 Arrays.asList("blahaj", "bl\u00e5haj", "haj", "haai", "hai", "default", "classic"),
                 true));
 
-// spotless:off
+        // spotless:off
         // Photo-textured 3D cats
         MODEL_VARIANTS.add(
             new BlahajVariant(
@@ -330,7 +330,7 @@ public class BlahajVariant {
             return null;
         }
 
-// spotless:off
+        // spotless:off
         // 0. 3D cat variants take priority over everything else
         BlahajVariant bestModelMatch = null;
         int bestModelKeywordLen = -1;
